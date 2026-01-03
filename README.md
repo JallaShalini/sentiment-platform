@@ -6,6 +6,23 @@ Built using **FastAPI, Redis, PostgreSQL, Hugging Face NLP models, React, and Do
 
 ---
 
+
+## Live Demo
+
+▶ **Recorded Live Demo (Dockerized Application)**  
+https://drive.google.com/file/d/1yKWNEs4HoNOSowYW5D9Wy5d2lCTo6snW/view
+
+This demo video showcases the complete working of the application, including:
+
+Launching all microservices using Docker Compose
+
+Real-time ingestion and processing of sentiment data
+
+Live WebSocket updates reflected instantly on the dashboard
+
+Seamless end-to-end data flow across all integrated microservices
+
+
 ## What Problem Does This Solve?
 
 Brands need to understand **public sentiment in real time** to:
