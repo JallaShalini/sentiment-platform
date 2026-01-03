@@ -1,115 +1,205 @@
-# Real-Time AI Sentiment Analysis Platform
+# Sentiment Command Center
 
-A full-stack event-driven platform that ingests social media posts, analyzes sentiment using AI (DistilBERT/RoBERTa), and visualizes results in real-time. This project demonstrates microservices architecture, Redis Streams, and WebSocket integration.
+A **real-time AI-powered sentiment monitoring platform** that ingests live social media–style data, analyzes sentiment and emotions, triggers alerts, and visualizes insights on an interactive dashboard.
 
----
-
-## 🚀 Features
-
-- **Real-Time Dashboard**: Live feed and charts updated via WebSockets.
-- **AI Processing**: Local inference using Hugging Face Transformers with external LLM fallback.
-- **Event-Driven Architecture**: Redis Streams with consumer groups for reliable message processing.
-- **Alerting System**: Automatically detects high negative sentiment ratios.
-- **Historic Analysis**: Time-series aggregation and sentiment distribution statistics.
+Built using **FastAPI, Redis, PostgreSQL, Hugging Face NLP models, React, and Docker**, this project demonstrates an end-to-end **real-time data + AI system**.
 
 ---
 
-## 🏗️ Architecture
+## What Problem Does This Solve?
 
-The system consists of **6 containerized services**:
+Brands need to understand **public sentiment in real time** to:
+- Detect negative trends early
+- Monitor customer feedback
+- Track product perception
 
-- Frontend (Web Dashboard)
-- Backend API
-- AI Worker
-- Data Ingester
-- Redis (Streams)
-- PostgreSQL (Persistence)
-
-For detailed design decisions and diagrams, see **ARCHITECTURE.md**.
+This system continuously processes incoming posts, analyzes sentiment instantly, and displays live insights—just like a real production monitoring platform.
 
 ---
 
-## ⚙️ Prerequisites
+## How the System Works (Flow)
 
-- **Docker**: v20.10+
-- **Docker Compose**: v2.0+
-- **RAM**: 4GB minimum recommended
-- **Ports**:
-  - `3000` → Frontend
-  - `8000` → Backend API
-- **API Keys** (Optional):
-  - Groq / OpenAI (for external LLM fallback)
+Ingest fake social media posts
+
+Stream data through Redis
+
+Analyze sentiment using AI models
+
+Store results in PostgreSQL
+
+Push live updates via WebSockets
+
+Visualize data on a dashboard
+
+Trigger alerts on negative spikes
 
 ---
 
-## ⚡ Quick Start
+## Architecture Overview
 
-### 1. Clone the Repository
-
-```bash
-git clone <your-repo-url>
-cd sentiment-platform
 ```
 
-### 2. Setup Environment
+┌────────────┐
+│ Ingestor │ → Generates posts
+└─────┬──────┘
+│ Redis Stream
+┌─────▼──────┐
+│ Worker │ → AI Sentiment & Emotion Analysis
+└─────┬──────┘
+│ PostgreSQL
+┌─────▼──────┐
+│ Backend │ → APIs, WebSockets, Alerts
+└─────┬──────┘
+│
+┌─────▼──────┐
+│ Frontend │ → Live Dashboard
+└────────────┘
+
+```
+
+
+---
+
+## Core Capabilities
+
+- Real-time data ingestion (Redis Streams)
+- AI-based sentiment & emotion detection
+- Async worker processing with batching
+- WebSocket live updates
+- Interactive React dashboard
+- Automated alerting engine
+- Fully Dockerized microservices
+- Unit & integration testing
+
+---
+
+## Dashboard Highlights
+
+- Total posts processed
+- Positive / Negative / Neutral counters
+- Live sentiment trend graph
+- Sentiment distribution chart
+- Real-time post feed with sentiment labels
+- Connection health indicator
+
+---
+
+## Repository Structure
+
+```
+sentiment-platform/
+│
+├── backend/ # FastAPI backend (APIs, alerts, WebSockets)
+├── worker/ # AI sentiment analysis worker
+├── ingester/ # Fake social media data generator
+├── frontend/ # React + Vite dashboard
+├── docker-compose.yml
+├── .env
+├── .env.example
+├── ARCHITECTURE.md
+└── README.md
+```
+
+
+---
+
+## AI & NLP Details
+
+- **Sentiment Model**: DistilBERT (positive / negative)
+- **Emotion Model**: DistilRoBERTa (joy, anger, etc.)
+- **External LLM Support** (optional): Groq / OpenAI-compatible
+- Fallback to local models if external API is unavailable
+
+---
+
+## Alerting Logic
+
+Alerts are triggered when:
+- A minimum number of posts are processed
+- The **negative-to-positive sentiment ratio** exceeds a threshold
+- Evaluated over a rolling time window
+
+Alerts are stored in the database for audit and monitoring.
+
+---
+
+## Environment Setup
+
+Create environment file:
 
 ```bash
 cp .env.example .env
-# Edit .env to add EXTERNAL_LLM_API_KEY if needed
 ```
 
-### 3. Start Services
+---
+
+## Key variables:
+
+DATABASE_URL=postgresql+asyncpg://user:password@postgres:5432/sentiment_db
+REDIS_HOST=redis
+REDIS_PORT=6379
+API_PORT=8000
+FRONTEND_PORT=3000
+ALERT_NEGATIVE_RATIO_THRESHOLD=0.5
+
+---
+
+## How to Run the Project
+Prerequisites
+
+Docker
+
+Docker Compose
+
+Start Everything
 
 ```bash
-docker-compose up -d --build
+docker-compose up --build
 ```
 
-> ⏳ Wait ~30 seconds for the AI worker to download models.
+## Access Services
 
-### 4. Access the Application
+Frontend Dashboard: http://localhost:3000
 
-- **Dashboard**: http://localhost:3000
-- **API Docs**: http://localhost:8000/docs
+Backend API: http://localhost:8000
 
-### 5. Run Tests
+Swagger Docs: http://localhost:8000/docs
+
+Health Check: http://localhost:8000/api/health
+
+---
+
+## Key API Endpoints
+GET /api/health
+GET /api/posts
+GET /api/sentiment/distribution
+GET /api/sentiment/aggregate
+
+---
+
+## WebSocket:
+
+ws://localhost:8000/ws/sentiment
+
+---
+## Testing
+
+Run backend tests:
+
+cd backend
 
 ```bash
-docker-compose exec backend pytest --cov=.
+pytest --cov
 ```
 
 ---
 
-## 🔧 Configuration
+## Ideal Use Cases
 
-The application is configured using environment variables in `.env`.
+Brand sentiment monitoring
 
-| Variable                       | Description               | Default             |
-| ------------------------------ | ------------------------- | ------------------- |
-| POSTGRES_USER                  | Database user             | sentiment_user      |
-| POSTGRES_PASSWORD              | Database password         | secure_password_123 |
-| REDIS_HOST                     | Redis hostname            | redis               |
-| EXTERNAL_LLM_API_KEY           | External LLM fallback key | -                   |
-| ALERT_NEGATIVE_RATIO_THRESHOLD | Alert trigger ratio       | 0.5                 |
+Social media analytics
 
----
+Real-time NLP pipelines
 
-## 📡 API Documentation
-
-### REST Endpoints
-
-- `GET /api/health` — System health status
-- `GET /api/posts` — List recent posts (pagination supported)
-- `GET /api/sentiment/distribution` — Sentiment distribution over time
-- `GET /api/sentiment/aggregate` — Time-series data for charts
-
-### WebSocket
-
-- `WS /ws/sentiment` — Live sentiment stream
-
----
-
-## ✅ Notes
-
-- Designed for horizontal scalability
-- Fault-tolerant message processing using Redis Streams
-- Suitable for real-time analytics and monitoring use cases
+Data & AI engineering portfolio project
